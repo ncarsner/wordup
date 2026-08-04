@@ -99,7 +99,7 @@
     "task": "inflection-rules",
     "category": "core",
     "priority": 4,
-    "done": false,
+    "done": true,
     "description": "R4 - Suffix stemming and re-inflection expressed as data, conservative on failure, always withholding multi-word alternatives when a suffix was stripped",
     "files_affected": [
       "src/wordup/inflect.py",
