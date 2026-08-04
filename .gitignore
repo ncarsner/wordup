@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+AGENTS/
+.claude/
+CLAUDE.md
+ralph.sh
+_SOLUTIONS/
+plans/
+log.md
+index.md
