@@ -1,0 +1,64 @@
+name: Publish to PyPI
+
+# Publishes wordup to PyPI using trusted publishing (OIDC), so no API token
+# is stored in this repository. Requires a publisher configured on PyPI for
+# owner ncarsner, repository wordup, workflow file workflow.yml, and
+# environment pypi.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v9
+        with:
+          enable-cache: true
+
+      - name: Build the source distribution and wheel
+        run: uv build
+
+      - name: Upload distributions as an artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+
+    # The environment gates the release and supplies the URL shown on the
+    # deployment. Configure required reviewers on it if manual approval is
+    # wanted before a version goes public.
+    environment:
+      name: pypi
+      url: https://pypi.org/p/wordup
+
+    # id-token: write is what mints the OIDC token that PyPI exchanges for
+    # short-lived upload credentials. Without it, trusted publishing fails.
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download the built distributions
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
