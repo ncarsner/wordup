@@ -8,12 +8,14 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Agent files
 AGENTS/
 .claude/
 CLAUDE.md
 ralph.sh
-_SOLUTIONS/
-plans/
 log.md
 index.md
-*-session.md
+_SOLUTIONS/
+plans/
+sessions/
