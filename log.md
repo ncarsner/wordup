@@ -1,0 +1,5 @@
+## Entries
+
+[2026-08-04T00:00:00Z] [package-skeleton] [done] [0] Added [project.scripts] wordup=wordup.cli:main, created src/wordup/py.typed marker, created src/wordup/cli.py stub, created src/wordup/data/lexicon.toml placeholder; uv build produces wheel containing wordup/data/ and wordup/py.typed; clean-env import verified.
+[2026-08-04T00:01:00Z] [lexicon-data-migration] [done] [0] Populated src/wordup/data/lexicon.toml with 86 base words and 526 alternatives as flat TOML arrays; parity check confirms TOML matches source dict exactly; four multi-word and one hyphenated alternative preserved; no score/weight/register/tier fields.
+[2026-08-04T00:02:00Z] [lexicon-loader-validation] [done] [0] Created src/wordup/errors.py (WordupError base + 6 typed subclasses), src/wordup/models.py (Lexicon dataclass with lazy-import classmethods load/default), src/wordup/lexicon.py (_validate, load, default with all five invariant checks), and tests/test_lexicon.py (17 tests, 100% coverage of lexicon.py confirmed).
