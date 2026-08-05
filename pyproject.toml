@@ -1,6 +1,6 @@
 [project]
 name = "wordup"
-version = "0.1.0"
+version = "0.2.0"
 description = "Interactive vocabulary review for your writing, one word at a time, in context."
 readme = "README.md"
 requires-python = ">=3.11"
