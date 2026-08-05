@@ -6,6 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from wordup.errors import WordupError
 from wordup.interactive import run_session
 
 
@@ -92,17 +93,51 @@ def main(argv: list[str] | None = None) -> int:
     if args.text is not None:
         text = args.text
     else:
-        text = args.file.read_text(encoding="utf-8")
+        try:
+            text = args.file.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            print(f"error: file not found: {args.file}", file=sys.stderr)
+            return 1
+        except IsADirectoryError:
+            print(f"error: {args.file} is a directory", file=sys.stderr)
+            return 1
+        except PermissionError:
+            print(f"error: permission denied: {args.file}", file=sys.stderr)
+            return 1
+        except UnicodeDecodeError as exc:
+            print(
+                f"error: {args.file}: cannot decode as {exc.encoding}: {exc.reason}",
+                file=sys.stderr,
+            )
+            return 1
 
     # Run the interactive session. The partial result is written even on
     # KeyboardInterrupt (exit code 130) so no accepted choice is lost.
-    result, exit_code = run_session(text)
+    try:
+        result, exit_code = run_session(text)
+    except WordupError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
 
     # Write output.
     if args.in_place:
-        args.file.write_text(result, encoding="utf-8")
+        try:
+            args.file.write_text(result, encoding="utf-8")
+        except PermissionError:
+            print(
+                f"error: cannot write to {args.file}: permission denied",
+                file=sys.stderr,
+            )
+            return 1
     elif args.output is not None:
-        args.output.write_text(result, encoding="utf-8")
+        try:
+            args.output.write_text(result, encoding="utf-8")
+        except PermissionError:
+            print(
+                f"error: cannot write to {args.output}: permission denied",
+                file=sys.stderr,
+            )
+            return 1
     else:
         sys.stdout.write(result)
 
