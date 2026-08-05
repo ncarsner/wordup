@@ -5,7 +5,55 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Release procedure
+
+Notes recorded here because both of the following cost a failed release or a
+misleading debugging session, and neither is obvious from the file being edited.
+
+**Verify the action *ref*, not the version number.** The broken pin came from
+querying the `releases/latest` API, which returns `v9.0.0`, and assuming a
+floating `v9` alias existed because that is the near-universal convention. It
+does not for every action. Check that the exact ref resolves before relying on
+it:
+
+```bash
+for r in actions/checkout astral-sh/setup-uv actions/upload-artifact \
+         actions/download-artifact pypa/gh-action-pypi-publish; do
+  curl -s "https://api.github.com/repos/$r/git/matching-refs/tags/v" \
+    | grep -o '"ref": "[^"]*"'
+done
+```
+
+Note that `pypa/gh-action-pypi-publish@release/v1` is a **branch**, not a tag,
+so it will not appear in a tag listing. Verify it separately.
+
+**A failed release run cannot be fixed by re-running it.** GitHub reads the
+workflow file as it existed at trigger time, so a re-run repeats the same
+failure with the same broken file. After merging a workflow fix, trigger
+`workflow_dispatch` on `main` instead. The version comes from `pyproject.toml`,
+so the existing tag and release need no recreating:
+
+```bash
+gh workflow run workflow.yml --repo ncarsner/wordup --ref main
+```
+
+**Bump the version before testing a rebuilt wheel locally.** uv keys its
+unpacked archive store on name plus version, so rebuilding an unchanged version
+resolves to the *first* wheel ever built under it. Neither `--refresh` nor
+`uv cache clean <pkg>` reliably evicts it. This presents as
+`Package 'wordup' does not provide any executables` or a module missing its
+exports, which looks exactly like a packaging bug and is not one. A plain venv
+with `pip --no-cache-dir` is the reliable check.
+
 ## [Unreleased]
+
+### Fixed
+
+- Pin `astral-sh/setup-uv` to `v9.0.0`. The `v0.2.0` release workflow failed in
+  two seconds at `Set up job` with `Unable to resolve action
+  astral-sh/setup-uv@v9, unable to find version v9`. That repository publishes
+  floating major tags only up to `v7`; `v8` and `v9` exist as full tags with no
+  major alias, unlike `actions/checkout` and the artifact actions.
 
 ## [0.2.0] - 2026-08-05
 
