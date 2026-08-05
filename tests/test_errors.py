@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import sys
 
-import pytest
 
 from wordup.cli import main
 from wordup.errors import MalformedLexiconError
