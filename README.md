@@ -9,10 +9,6 @@ alternatives. You pick, or you decline. It never rewrites anything on its own,
 because whether a word is an improvement depends entirely on the sentence around
 it, and that is a judgment only the person reading it can make.
 
-> **Status: in development.** The design is settled and the interface below is
-> the specification, but the command is not yet implemented. Progress is tracked
-> in the [issues](https://github.com/ncarsner/wordup/issues).
-
 ## Installation
 
 Run it without installing anything:

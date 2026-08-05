@@ -1,6 +1,6 @@
 [project]
 name = "wordup"
-version = "0.1.0"
+version = "0.2.0"
 description = "Interactive vocabulary review for your writing, one word at a time, in context."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -10,5 +10,26 @@ dependencies = []
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[project.scripts]
+wordup = "wordup.cli:main"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/wordup"]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--cov", "--cov-report=term-missing"]
+
+[tool.coverage.run]
+source = ["src/wordup"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 100
